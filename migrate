@@ -1,0 +1,45 @@
+#!/usr/bin/env php
+<?php
+
+require_once __DIR__ . 'src/config/config.php';
+
+use App\Core\Database;
+
+// Lecture du fichier SQL
+$sqlFile = __DIR__ . 'src/Database/database.sql';
+
+if (!file_exists($sqlFile)) {
+    echo "❌ Fichier SQL introuvable : $sqlFile\n";
+    exit(1);
+}
+
+$sql = file_get_contents($sqlFile);
+
+// Connexion à MySQL
+try {
+    $host = getenv('DB_HOST');
+    $port = getenv('DB_PORT') ?: 3306;
+    $user = getenv('DB_USERNAME');
+    $pass = getenv('DB_PASSWORD');
+    $dbName = getenv('DB_NAME');
+
+    $pdo = new PDO("mysql:host=$host;port=$port", $user, $pass);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // Créer la base si elle n'existe pas
+    $pdo->exec("CREATE DATABASE IF NOT EXISTS `$dbName` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+
+    echo "✅ Base de données '$dbName' créée ou déjà existante.\n";
+
+    // Utiliser la base
+    $pdo->exec("USE `$dbName`;");
+
+    // Exécuter les requêtes
+    $pdo->exec($sql);
+
+    echo "✅ Migration terminée avec succès.\n";
+
+} catch (PDOException $e) {
+    echo "❌ Erreur lors de la migration : " . $e->getMessage() . "\n";
+    exit(1);
+}
