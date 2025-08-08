@@ -1,10 +1,9 @@
 <?php
 
-use src\Controllers\AuthController;
+use App\Controllers\UserController;
 
-// Connexion à la base (à adapter selon ta config)
-$pdo = new PDO('mysql:host=localhost;dbname=todoapp', getenv('DB_USER'), getenv('DB_PASS'));
-$controller = new AuthController($pdo);
+global $db; // récupère le PDO défini dans config.php
+$controller = new UserController($db);
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
@@ -26,7 +25,6 @@ switch ($uri) {
         $controller->logout();
     break;
 
-    // dashboard à faire plus tard
     default:
         echo "Page non trouvée.";
     break;
