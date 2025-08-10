@@ -19,7 +19,7 @@ class UserController
      */
     public function showLoginForm(): void
     {
-        require __DIR__ . '/../../Views/auth/login.php';
+        require __DIR__ . '/../View/auth/login.php';
     }
 
     /**
@@ -27,7 +27,7 @@ class UserController
      */
     public function showRegisterForm(): void
     {
-        require __DIR__ . '/../../Views/auth/register.php';
+        require __DIR__ . '/../View/auth/register.php';
     }
 
     /**
