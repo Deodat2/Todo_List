@@ -6,34 +6,38 @@ if (session_status() === PHP_SESSION_NONE) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Login - Todo List</title>
-    <link rel="stylesheet" href="/css/styles.css" />
-</head>
-<body>
 
-<div class="login-container">
-    <h2>Welcome Back</h2>
-    <form method="POST" action="/?page=login">
-        <div class="form-group">
-            <label for="email">Email address</label>
-            <input type="email" id="email" name="email" placeholder="you@example.com" required />
-        </div>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Login - Todo List</title>
+        <link rel="stylesheet" href="/css/styles.css" />
+    </head>
 
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="********" required />
-        </div>
+    <body>
 
-        <button type="submit" class="btn">Login</button>
+        <main class="auth-container">
 
-        <div class="register-link">
-            Don't have an account? <a href="/?page=register">Sign up</a>
-        </div>
-    </form>
-</div>
+            <h1>Welcome Back</h1>
 
-</body>
+            <form method="POST" action="/?page=login" class="auth-form">
+
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="you@example.com" required />
+
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="********" required />
+
+                <button type="submit">Login</button>
+
+            </form>
+
+            <p class="auth-footer">
+                Don't have an account? <a href="/?page=register">Sign up</a>
+            </p>
+
+        </main>
+
+    </body>
+    
 </html>
