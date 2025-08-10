@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use src\Model\User;
+use App\Model\User;
 use PDO;
 
 class UserController
@@ -14,48 +14,67 @@ class UserController
         $this->userModel = new User($db);
     }
 
-    public function showLoginForm()
+    /**
+     * Affiche le formulaire de connexion
+     */
+    public function showLoginForm(): void
     {
         require __DIR__ . '/../../Views/auth/login.php';
     }
 
-    public function showRegisterForm()
+    /**
+     * Affiche le formulaire d'inscription
+     */
+    public function showRegisterForm(): void
     {
         require __DIR__ . '/../../Views/auth/register.php';
     }
 
-    public function register(array $data)
+    /**
+     * Inscription d'un nouvel utilisateur
+     */
+    public function register(array $data): void
     {
-        $username = $data['username'];
-        $email = $data['email'];
+        $username = trim($data['username']);
+        $email = trim($data['email']);
         $password = $data['password'];
 
         $success = $this->userModel->createUser($username, $email, $password);
+
         if ($success) {
-            header('Location: /login');
+            header('Location: /?page=login');
+            exit;
         } else {
             echo "Erreur lors de l'inscription.";
         }
     }
 
-    public function login(array $data)
+    /**
+     * Connexion d'un utilisateur
+     */
+    public function login(array $data): void
     {
-        $email = $data['email'];
+        $email = trim($data['email']);
         $password = $data['password'];
 
         $user = $this->userModel->getUserByEmail($email);
 
         if ($user && password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
-            header('Location: /dashboard');
+            header('Location: /?page=dashboard');
+            exit;
         } else {
             echo "Email ou mot de passe incorrect.";
         }
     }
 
-    public function logout()
+    /**
+     * Déconnexion d'un utilisateur
+     */
+    public function logout(): void
     {
         session_destroy();
-        header('Location: /login');
+        header('Location: /?page=login');
+        exit;
     }
 }

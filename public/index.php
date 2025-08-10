@@ -6,5 +6,5 @@ require_once __DIR__ . '/../src/Routes/web.php';
 
 use App\Core\Router;
 
-$router = new Router();
+$router = new Router($db);
 $router->handleRequest();
