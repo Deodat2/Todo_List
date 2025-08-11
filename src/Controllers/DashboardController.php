@@ -6,6 +6,9 @@ class DashboardController
 {
     public function index()
     {
-        echo "Bienvenue sur le Dashboard";
+        // Ici tu peux récupérer les données nécessaires pour afficher dans le dashboard,
+        // comme les tâches, stats, etc. Pour l'instant, on affiche juste la vue.
+
+        require __DIR__ . '/../View/dashboard.php';
     }
 }

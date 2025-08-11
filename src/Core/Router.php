@@ -38,6 +38,51 @@ class Router {
                 }
                 break;
 
+            case 'tasks':
+                if (!$this->isAuthenticated()) {
+                    header('Location: /?page=login');
+                    exit;
+                }
+                $controller = new TaskController($this->db);
+                if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                    // Pour gérer delete, update, create en POST
+                    if (isset($_POST['action'])) {
+                        switch ($_POST['action']) {
+                            case 'create':
+                                $controller->create($_POST);
+                                break;
+                            case 'update':
+                                $id = (int)($_POST['id'] ?? 0);
+                                $controller->update($id, $_POST);
+                                break;
+                            case 'delete':
+                                $id = (int)($_POST['id'] ?? 0);
+                                $controller->delete($id);
+                                break;
+                            default:
+                                // Action inconnue
+                                header('Location: /?page=tasks');
+                                exit;
+                        }
+                    }
+                } else {
+                    // GET requests
+                    $subpage = $_GET['subpage'] ?? '';
+                    switch ($subpage) {
+                        case 'create':
+                            $controller->showCreateForm();
+                            break;
+                        case 'edit':
+                            $id = (int)($_GET['id'] ?? 0);
+                            $controller->showEditForm($id);
+                            break;
+                        default:
+                            $controller->index();
+                            break;
+                    }
+                }
+                break;
+
             case 'logout':
                 $controller = new UserController($this->db);
                 $controller->logout();
