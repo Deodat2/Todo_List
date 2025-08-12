@@ -20,15 +20,19 @@ class TaskController
     public function index(): void
     {
         $userId = $_SESSION['user_id'] ?? null;
+
         if (!$userId) {
+
             header('Location: /?page=login');
+
             exit;
         }
 
         $tasks = $this->taskModel->getAllByUser($userId);
 
         // Inclure la vue liste tasks
-        require_once __DIR__ . '/../View/task/index.php';
+        require_once __DIR__ . '/../View/partials/tasks-list.php';
+
     }
 
     // Affiche le formulaire de création de tâche
@@ -41,31 +45,68 @@ class TaskController
     public function create(array $data): void
     {
         $userId = $_SESSION['user_id'] ?? null;
+
         if (!$userId) {
+
             header('Location: /?page=login');
+
             exit;
+
         }
 
         $title = trim($data['title'] ?? '');
+
         $description = trim($data['description'] ?? '');
-        $tagsRaw = trim($data['tags'] ?? '');
-        $tags = array_filter(array_map('trim', explode(',', $tagsRaw)));
+
+        $tagsInput = $_POST['tags'] ?? [];
+
+        // S'assurer que c'est bien un tableau
+        if (!is_array($tagsInput)) {
+
+            $tagsInput = [$tagsInput];
+
+        }
+
+        // Nettoyer chaque tag
+        $tags = array_map(function($tag) {
+
+            return trim($tag);
+
+        }, $tagsInput);
+
+        // Supprimer les tags vides
+        $tags = array_filter($tags, function($tag) {
+
+            return $tag !== '';
+
+        });
 
         if ($title === '') {
+
             $error = "Le titre est obligatoire.";
+
             require_once __DIR__ . '/../View/task/create.php';
+
             return;
+
         }
 
         $success = $this->taskModel->create($userId, $title, $description, $tags);
 
         if ($success) {
-            header('Location: /?page=tasks');
+
+            header('Location: /?page=dashboard');
+
             exit;
+
         } else {
+
             $error = "Erreur lors de la création de la tâche.";
+
             require_once __DIR__ . '/../View/task/create.php';
+
         }
+
     }
 
     // Affiche le formulaire d'édition d'une tâche
@@ -74,66 +115,121 @@ class TaskController
         $task = $this->taskModel->getById($id);
 
         if (!$task) {
+
             header('HTTP/1.0 404 Not Found');
+
             echo "Tâche non trouvée";
+
             exit;
+
         }
 
         // Sécurité : vérifier que la tâche appartient à l'utilisateur connecté
         if ($task['user_id'] !== ($_SESSION['user_id'] ?? 0)) {
+
             header('HTTP/1.0 403 Forbidden');
+
             echo "Accès refusé";
+
             exit;
+
         }
 
         require_once __DIR__ . '/../View/task/edit.php';
+
     }
 
     // Traite la mise à jour d'une tâche
     public function update(int $id, array $data): void
     {
         $task = $this->taskModel->getById($id);
+
         if (!$task || $task['user_id'] !== ($_SESSION['user_id'] ?? 0)) {
+
             header('HTTP/1.0 403 Forbidden');
+
             echo "Accès refusé";
+
             exit;
+
         }
 
         $title = trim($data['title'] ?? '');
+
         $description = trim($data['description'] ?? '');
-        $tagsRaw = trim($data['tags'] ?? '');
-        $tags = array_filter(array_map('trim', explode(',', $tagsRaw)));
+
+        $tagsInput = $_POST['tags'] ?? [];
+
+        // S'assurer que c'est bien un tableau
+        if (!is_array($tagsInput)) {
+
+            $tagsInput = [$tagsInput];
+
+        }
+
+        // Nettoyer chaque tag
+        $tags = array_map(function($tag) {
+
+            return trim($tag);
+
+        }, $tagsInput);
+
+        // Supprimer les tags vides
+        $tags = array_filter($tags, function($tag) {
+
+            return $tag !== '';
+
+        });
 
         if ($title === '') {
+
             $error = "Le titre est obligatoire.";
+
             require_once __DIR__ . '/../View/task/edit.php';
+
             return;
+
         }
 
         $success = $this->taskModel->update($id, $title, $description, $tags);
 
         if ($success) {
-            header('Location: /?page=tasks');
+
+            header('Location: /?page=dashboard');
+
             exit;
+
         } else {
+
             $error = "Erreur lors de la mise à jour de la tâche.";
+
             require_once __DIR__ . '/../View/task/edit.php';
+
         }
+
     }
 
     // Supprime une tâche
     public function delete(int $id): void
     {
         $task = $this->taskModel->getById($id);
+
         if (!$task || $task['user_id'] !== ($_SESSION['user_id'] ?? 0)) {
+
             header('HTTP/1.0 403 Forbidden');
+
             echo "Accès refusé";
+
             exit;
+
         }
 
         $this->taskModel->delete($id);
 
-        header('Location: /?page=tasks');
+        header('Location: /?page=dashboard');
+
         exit;
+
     }
+
 }

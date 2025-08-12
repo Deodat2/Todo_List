@@ -45,81 +45,142 @@ class Router {
             break;
 
             case 'register':
+
                 $controller = new UserController($this->db);
+
                 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
                     $controller->register($_POST);
+
                 } else {
+
                     $controller->showRegisterForm();
+
                 }
-                break;
+            
+            break;
+
+            case 'dashboard':
+
+                if (!$this->isAuthenticated()) {
+
+                    header('Location: /?page=login');
+
+                    exit;
+
+                }
+
+                $controller = new DashboardController();
+
+                $controller->index($this->db);
+
+            break;
 
             case 'tasks':
+
                 if (!$this->isAuthenticated()) {
+
                     header('Location: /?page=login');
+
                     exit;
+
                 }
+
                 $controller = new TaskController($this->db);
+
                 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Pour gérer delete, update, create en POST
                     if (isset($_POST['action'])) {
+
                         switch ($_POST['action']) {
+
                             case 'create':
+
                                 $controller->create($_POST);
-                                break;
+
+                            break;
+
                             case 'update':
+
                                 $id = (int)($_POST['id'] ?? 0);
+
                                 $controller->update($id, $_POST);
-                                break;
+
+                            break;
+
                             case 'delete':
+
                                 $id = (int)($_POST['id'] ?? 0);
+
                                 $controller->delete($id);
-                                break;
+
+                            break;
+
                             default:
                                 // Action inconnue
                                 header('Location: /?page=tasks');
-                                exit;
+                            exit;
+
                         }
+
                     }
+
                 } else {
+
                     // GET requests
                     $subpage = $_GET['subpage'] ?? '';
                     switch ($subpage) {
+
                         case 'create':
-                            $controller->showCreateForm();
-                            break;
+
+                            $controller->CreateForm();
+
+                        break;
+
                         case 'edit':
+
                             $id = (int)($_GET['id'] ?? 0);
-                            $controller->showEditForm($id);
-                            break;
+
+                            $controller->EditForm($id);
+
+                        break;
+
                         default:
+
                             $controller->index();
-                            break;
+
+                        break;
+
                     }
+
                 }
-                break;
+
+            break;
 
             case 'logout':
-                $controller = new UserController($this->db);
-                $controller->logout();
-                break;
 
-            case 'dashboard':
-                if (!$this->isAuthenticated()) {
-                    header('Location: /?page=login');
-                    exit;
-                }
-                $controller = new DashboardController();
-                $controller->index();
-                break;
+                $controller = new UserController($this->db);
+
+                $controller->logout();
+
+            break;
 
             default:
+
                 header('HTTP/1.0 404 Not Found');
+
                 echo "Page non trouvée";
-                break;
+
+            break;
+
         }
+
     }
 
     private function isAuthenticated(): bool {
+
         return isset($_SESSION['user_id']);
+
     }
+
 }
