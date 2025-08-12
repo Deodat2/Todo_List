@@ -2,12 +2,21 @@
 
 namespace App\Controllers;
 
+use App\Controllers\TaskController;
+use PDO;
+
 class DashboardController
 {
-    public function index()
+    private PDO $db;
+
+    public function index(PDO $db)
     {
-        // Ici tu peux récupérer les données nécessaires pour afficher dans le dashboard,
-        // comme les tâches, stats, etc. Pour l'instant, on affiche juste la vue.
+
+        $this->db = $db;
+
+        $controllerTask = new TaskController($this->db);
+
+        $controllerTask->index();
 
         require __DIR__ . '/../View/dashboard.php';
     }

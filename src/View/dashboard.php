@@ -1,8 +1,3 @@
-<?php
-// Inclure le header
-require __DIR__ . '/partials/header.php';
-?>
-
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -13,6 +8,12 @@ require __DIR__ . '/partials/header.php';
     </head>
 
     <body>
+
+        <header>
+
+            <?php include __DIR__ . '/partials/header.php'; ?>
+
+        </header>
         
         <main>
 

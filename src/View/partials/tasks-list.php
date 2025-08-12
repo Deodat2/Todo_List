@@ -1,26 +1,18 @@
 <?php if (!empty($_SESSION['success'])): ?>
 
-    <div class="alert success"><?= htmlspecialchars($_SESSION['success']) ?></div>
-
+    <div class="success"><?= htmlspecialchars($_SESSION['success']) ?></div>
+            
     <?php unset($_SESSION['success']); ?>
 
 <?php endif; ?>
 
 <?php if (!empty($_SESSION['error'])): ?>
 
-    <div class="alert error"><?= htmlspecialchars($_SESSION['error']) ?></div>
+    <div class="error"><?= htmlspecialchars($_SESSION['error']) ?></div>
 
     <?php unset($_SESSION['error']); ?>
 
 <?php endif; ?>
-
-<div class="tasks-header">
-
-    <h2>Mes tâches</h2>
-
-    <a href="/?page=tasks&subpage=create" class="btn btn-primary">+ Nouvelle tâche</a>
-
-</div>
 
 <div class="task-cards">
 
@@ -48,7 +40,7 @@
                 
                 </p>
 
-                <form method="POST" action="/?page=tasks" class="delete-form" onsubmit="event.stopPropagation(); return confirm('Supprimer cette tâche ?');">
+                <form method="POST" action="/?page=dashboard" class="delete-form" onsubmit="event.stopPropagation(); return confirm('Supprimer cette tâche ?');">
                     
                     <input type="hidden" name="id" value="<?= $task['id'] ?>" />
 
@@ -63,5 +55,5 @@
         <?php endforeach; ?>
 
     <?php endif; ?>
-    
+
 </div>

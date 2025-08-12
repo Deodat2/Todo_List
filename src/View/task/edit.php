@@ -1,13 +1,9 @@
-<?php
-// Views/tasks/edit.php
-session_start();
-?>
 <!DOCTYPE html>
 <html lang="fr">
     <head>
         <meta charset="UTF-8" />
         <title>Modifier la tâche</title>
-        <link rel="stylesheet" href="/css/style.css" />
+        <link rel="stylesheet" href="/css/styles.css" />
     </head>
     <body>
         <h1>Modifier la tâche</h1>
