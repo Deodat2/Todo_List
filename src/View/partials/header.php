@@ -19,7 +19,7 @@ $username = $_SESSION['username'] ?? 'Utilisateur';
 
                 <button class="user-icon" id="userMenuBtn">
                     
-                    <img src="/public/uploads/user-icon.svg" alt="User">
+                    <img src="/public/user-icon.svg" alt="User">
 
                 </button>
 

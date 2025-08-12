@@ -9,13 +9,13 @@
 
     <body>
 
-        <header>
+        <header class="head">
 
             <?php include __DIR__ . '/partials/header.php'; ?>
 
         </header>
         
-        <main>
+        <main class="main">
 
             <?php include __DIR__ . '/partials/tasks-list.php'; ?>
 

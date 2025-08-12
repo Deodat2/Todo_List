@@ -31,7 +31,7 @@ class TaskController
         $tasks = $this->taskModel->getAllByUser($userId);
 
         // Inclure la vue liste tasks
-        require_once __DIR__ . '/../View/partials/tasks-list.php';
+        require_once __DIR__ . '/../View/dashboard.php';
 
     }
 
