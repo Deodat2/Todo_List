@@ -147,7 +147,7 @@ class Router {
 
                         default:
 
-                            $controller->index();
+                            $controller->getTasksForCurrentUser();
 
                         break;
 

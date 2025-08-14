@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <title>Liste des tâches</title>
-        <link rel="stylesheet" href="/css/style.css" />
+        <link rel="stylesheet" href="/css/styles.css" />
     </head>
     <body>
         <h1>Liste des tâches</h1>

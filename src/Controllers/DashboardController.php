@@ -9,15 +9,17 @@ class DashboardController
 {
     private PDO $db;
 
+    // DashboardController.php
     public function index(PDO $db)
     {
-
         $this->db = $db;
 
         $controllerTask = new TaskController($this->db);
 
-        $controllerTask->index();
+        // Récupère les tâches depuis TaskController
+        $tasks = $controllerTask->getTasksForCurrentUser();
 
         require __DIR__ . '/../View/dashboard.php';
     }
+    
 }

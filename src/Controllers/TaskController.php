@@ -17,7 +17,7 @@ class TaskController
     }
 
     // Affiche la liste des tâches de l'utilisateur connecté
-    public function index(): void
+    public function getTasksForCurrentUser(): array
     {
         $userId = $_SESSION['user_id'] ?? null;
 
@@ -26,13 +26,11 @@ class TaskController
             header('Location: /?page=login');
 
             exit;
+
         }
 
-        $tasks = $this->taskModel->getAllByUser($userId);
-
-        // Inclure la vue liste tasks
-        require_once __DIR__ . '/../View/dashboard.php';
-
+        return $this->taskModel->getAllByUser($userId);
+        
     }
 
     // Affiche le formulaire de création de tâche
