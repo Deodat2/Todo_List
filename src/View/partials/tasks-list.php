@@ -1,7 +1,7 @@
 <?php if (!empty($_SESSION['success'])): ?>
 
     <div class="success"><?= htmlspecialchars($_SESSION['success']) ?></div>
-            
+
     <?php unset($_SESSION['success']); ?>
 
 <?php endif; ?>
@@ -14,8 +14,19 @@
 
 <?php endif; ?>
 
-<div class="task-cards">
+<!-- Barres de recherche -->
+<div style="display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 10px; padding-right: 10px;">
 
+    <input type="text" id="title-search" placeholder="Rechercher par titre..." 
+        style="padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
+
+    <input type="text" id="tag-search" placeholder="Rechercher par tag..." 
+        style="padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
+
+</div>
+
+<div class="task-cards">
+    
     <?php if (empty($tasks)): ?>
 
         <p>Aucune tâche trouvée.</p>
@@ -24,9 +35,11 @@
 
         <?php foreach ($tasks as $task): ?>
 
-            <div class="task-card">
-                
-                <!-- Header de la carte -->
+            <div class="task-card"
+
+                data-title="<?= htmlspecialchars(strtolower($task['title'])) ?>"
+                data-tags="<?= htmlspecialchars(strtolower(implode(',', $task['tags'] ?? []))) ?>">
+                 
                 <div class="task-card-header">
 
                     <h3 class="task-title"><?= htmlspecialchars($task['title']) ?></h3>
@@ -61,18 +74,18 @@
 
                 </div>
 
-                <!-- Description -->
+
                 <p class="task-desc" onclick="window.location.href='/?page=tasks&subpage=edit&id=<?= $task['id'] ?>'">
                     
                     <?= htmlspecialchars(mb_strimwidth($task['description'], 0, 80, '...')) ?>
                 
                 </p>
 
-                <!-- Footer avec bouton suppression -->
+
                 <div class="task-card-footer">
 
                     <form method="POST" action="'/?page=tasks&subpage=delete&id=<?= $task['id'] ?>'" class="delete-form" 
-
+                        
                         onsubmit="return confirm('Supprimer cette tâche ?');">
 
                         <input type="hidden" name="id" value="<?= $task['id'] ?>" />
@@ -94,29 +107,45 @@
 </div>
 
 <script>
-
+    // Gestion dropdown tags
     document.addEventListener('click', function(e) {
-
-        // Fermer tous les dropdowns si clic à l'extérieur
         document.querySelectorAll('.tag-dropdown').forEach(dropdown => {
-
             if (!dropdown.contains(e.target)) {
-
                 dropdown.classList.remove('open');
-
             }
-
         });
 
-        // Ouvrir/fermer celui sur lequel on clique
         if (e.target.closest('.tag-dropdown-btn')) {
-
             const dropdown = e.target.closest('.tag-dropdown');
-
             dropdown.classList.toggle('open');
-
         }
-
     });
 
+    // Filtrage par titre et tag
+    const titleSearch = document.getElementById('title-search');
+    const tagSearch = document.getElementById('tag-search');
+
+    function filterTasks() {
+        const titleValue = titleSearch.value.toLowerCase();
+        const tagValue = tagSearch.value.toLowerCase();
+        const cards = document.querySelectorAll('.task-card');
+
+        cards.forEach(card => {
+            const title = card.getAttribute('data-title');
+            const tags = card.getAttribute('data-tags');
+
+            const matchTitle = title.includes(titleValue) || titleValue === '';
+            const matchTag = tags.includes(tagValue) || tagValue === '';
+
+            // Afficher si les deux conditions sont respectées
+            if (matchTitle && matchTag) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    titleSearch.addEventListener('input', filterTasks);
+    tagSearch.addEventListener('input', filterTasks);
 </script>

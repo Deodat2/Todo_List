@@ -89,6 +89,16 @@ class TaskController
 
         }
 
+        // Vérification qu’il y a au moins un tag
+        if (empty($tags)) {
+
+            $_SESSION['error'] = "Chaque tâche doit avoir au moins un tag.";
+
+            header("Location: /?page=tasks&subpage=create");
+
+            exit;
+        }
+
         $success = $this->taskModel->create($userId, $title, $description, $tags);
 
         if ($success) {
