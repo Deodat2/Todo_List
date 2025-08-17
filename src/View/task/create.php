@@ -25,7 +25,7 @@ require __DIR__ . '/../partials/header.php';
 
             <?php endif; ?>
 
-            <form method="POST" action="/?page=tasks">
+            <form method="POST" action="/?page=tasks" id="task-form">
 
                 <input type="hidden" name="action" value="create" />
 
@@ -59,6 +59,7 @@ require __DIR__ . '/../partials/header.php';
 
         <script>
 
+            const taskForm = document.getElementById('task-form');
             const tagContainer = document.getElementById('tag-container');
             const availableTags = document.querySelectorAll('.tag-option');
             const newTagInput = document.getElementById('new-tag');
@@ -125,7 +126,7 @@ require __DIR__ . '/../partials/header.php';
                     const newTag = newTagInput.value.trim();
 
                     if (newTag && !selectedTags.includes(newTag)) {
-
+                        
                         selectedTags.push(newTag);
 
                         renderTags();
@@ -136,6 +137,13 @@ require __DIR__ . '/../partials/header.php';
 
                 }
 
+            });
+
+            taskForm.addEventListener('submit', function(e) {
+                if (selectedTags.length === 0) {
+                    e.preventDefault(); // empêche l’envoi
+                    alert("Veuillez ajouter au moins un tag avant de créer la tâche.");
+                }
             });
 
         </script>
