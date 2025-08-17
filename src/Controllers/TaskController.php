@@ -25,12 +25,12 @@ class TaskController
 
             header('Location: /?page=login');
 
-            exit;
+            die();
 
         }
 
         return $this->taskModel->getAllByUser($userId);
-        
+
     }
 
     // Affiche le formulaire de création de tâche
@@ -48,7 +48,7 @@ class TaskController
 
             header('Location: /?page=login');
 
-            exit;
+            die();
 
         }
 
@@ -56,62 +56,45 @@ class TaskController
 
         $description = trim($data['description'] ?? '');
 
-        $tagsInput = $_POST['tags'] ?? [];
-
-        // S'assurer que c'est bien un tableau
-        if (!is_array($tagsInput)) {
-
-            $tagsInput = [$tagsInput];
-
-        }
-
-        // Nettoyer chaque tag
-        $tags = array_map(function($tag) {
-
-            return trim($tag);
-
-        }, $tagsInput);
-
-        // Supprimer les tags vides
-        $tags = array_filter($tags, function($tag) {
-
-            return $tag !== '';
-
-        });
+        $tags = $this->sanitizeTags($data['tags'] ?? []);
 
         if ($title === '') {
 
-            $error = "Le titre est obligatoire.";
+            $_SESSION['error'] = "Le titre est obligatoire.";
 
-            require_once __DIR__ . '/../View/task/create.php';
+            header("Location: /?page=tasks&subpage=create");
 
-            return;
+            die();
 
         }
 
-        // Vérification qu’il y a au moins un tag
         if (empty($tags)) {
 
             $_SESSION['error'] = "Chaque tâche doit avoir au moins un tag.";
 
             header("Location: /?page=tasks&subpage=create");
+            
+            die();
 
-            exit;
         }
 
         $success = $this->taskModel->create($userId, $title, $description, $tags);
 
         if ($success) {
 
+            $_SESSION['success'] = "Tâche créée avec succès.";
+
             header('Location: /?page=dashboard');
 
-            exit;
+            die();
 
         } else {
 
-            $error = "Erreur lors de la création de la tâche.";
+            $_SESSION['error'] = "Erreur lors de la création de la tâche.";
 
-            require_once __DIR__ . '/../View/task/create.php';
+            header("Location: /?page=tasks&subpage=create");
+
+            die();
 
         }
 
@@ -128,18 +111,17 @@ class TaskController
 
             echo "Tâche non trouvée";
 
-            exit;
+            die();
 
         }
 
-        // Sécurité : vérifier que la tâche appartient à l'utilisateur connecté
         if ($task['user_id'] !== ($_SESSION['user_id'] ?? 0)) {
 
             header('HTTP/1.0 403 Forbidden');
 
             echo "Accès refusé";
 
-            exit;
+            die();
 
         }
 
@@ -158,7 +140,7 @@ class TaskController
 
             echo "Accès refusé";
 
-            exit;
+            die();
 
         }
 
@@ -166,36 +148,15 @@ class TaskController
 
         $description = trim($data['description'] ?? '');
 
-        $tagsInput = $_POST['tags'] ?? [];
-
-        // S'assurer que c'est bien un tableau
-        if (!is_array($tagsInput)) {
-
-            $tagsInput = [$tagsInput];
-
-        }
-
-        // Nettoyer chaque tag
-        $tags = array_map(function($tag) {
-
-            return trim($tag);
-
-        }, $tagsInput);
-
-        // Supprimer les tags vides
-        $tags = array_filter($tags, function($tag) {
-
-            return $tag !== '';
-
-        });
+        $tags = $this->sanitizeTags($data['tags'] ?? []);
 
         if ($title === '') {
 
-            $error = "Le titre est obligatoire.";
+            $_SESSION['error'] = "Le titre est obligatoire.";
 
-            require_once __DIR__ . '/../View/task/edit.php';
+            header("Location: /?page=tasks&subpage=edit&id={$id}");
 
-            return;
+            die();
 
         }
 
@@ -203,15 +164,19 @@ class TaskController
 
         if ($success) {
 
+            $_SESSION['success'] = "Tâche mise à jour avec succès.";
+
             header('Location: /?page=dashboard');
 
-            exit;
+            die();
 
         } else {
 
-            $error = "Erreur lors de la mise à jour de la tâche.";
+            $_SESSION['error'] = "Erreur lors de la mise à jour de la tâche.";
 
-            require_once __DIR__ . '/../View/task/edit.php';
+            header("Location: /?page=tasks&subpage=edit&id={$id}");
+
+            die();
 
         }
 
@@ -228,16 +193,35 @@ class TaskController
 
             echo "Accès refusé";
 
-            exit;
+            die();
 
         }
 
         $this->taskModel->delete($id);
 
+        $_SESSION['success'] = "Tâche supprimée avec succès.";
+
         header('Location: /?page=dashboard');
 
-        exit;
+        die();
 
     }
 
+    /**
+     * Nettoie et valide les tags envoyés
+     */
+    private function sanitizeTags(array|string $tagsInput): array
+    {
+        if (!is_array($tagsInput)) {
+
+            $tagsInput = [$tagsInput];
+
+        }
+
+        $tags = array_map('trim', $tagsInput);
+
+        $tags = array_filter($tags, fn($tag) => $tag !== '');
+
+        return $tags;
+    }
 }

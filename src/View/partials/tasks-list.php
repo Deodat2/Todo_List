@@ -1,14 +1,22 @@
-<?php if (!empty($_SESSION['success'])): ?>
+<?php if (isset($_SESSION['success'])): ?>
 
-    <div class="success"><?= htmlspecialchars($_SESSION['success']) ?></div>
+    <div class="flash-message success">
+
+        <?= htmlspecialchars($_SESSION['success']) ?>
+
+    </div>
 
     <?php unset($_SESSION['success']); ?>
 
 <?php endif; ?>
 
-<?php if (!empty($_SESSION['error'])): ?>
+<?php if (isset($_SESSION['error'])): ?>
 
-    <div class="error"><?= htmlspecialchars($_SESSION['error']) ?></div>
+    <div class="flash-message error">
+
+        <?= htmlspecialchars($_SESSION['error']) ?>
+
+    </div>
 
     <?php unset($_SESSION['error']); ?>
 
@@ -148,4 +156,17 @@
 
     titleSearch.addEventListener('input', filterTasks);
     tagSearch.addEventListener('input', filterTasks);
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const flashMessages = document.querySelectorAll(".flash-message");
+
+        flashMessages.forEach(msg => {
+            setTimeout(() => {
+                msg.style.opacity = "0";
+                msg.style.transition = "opacity 0.5s ease";
+
+                setTimeout(() => msg.remove(), 500); // suppression après fade-out
+            }, 2000); // 2 secondes d'affichage
+        });
+    });
 </script>
