@@ -36,10 +36,19 @@ cd Todo_List
 
 ### 3. Modifier les variables selon votre configuration locale
 
-### 4. Créer la base de données
+```env
+DB_HOST=127.0.0.1
+DB_NAME=
+DB_USER=
+DB_PASS=
+```
+
+### 4. lancer XAMPP ou WAMP (ou le service MySQL si tu l’as installé seul).
+
+### 5. Créer la base de données
 
 ```bash
-mysql -u root -p todo_app < migrations/schema.sql
+php migrate
 ```
 
 ### 5. Lancer le serveur local
