@@ -95,6 +95,25 @@ class Task
         }
     }
 
+    public function updateStatus(int $taskId, string $status): bool
+    {
+        $this->db->beginTransaction();
+
+        try {
+            $stmt = $this->db->prepare("UPDATE tasks SET status = :status WHERE id = :id");
+            $stmt->execute([
+                'status' => $status,
+                'id' => $taskId
+            ]);
+
+            $this->db->commit();
+            return true;
+        } catch (\Exception $e) {
+            $this->db->rollBack();
+            return false;
+        }
+    }
+
     // Supprimer une tâche (et cascade via FK)
     public function delete(int $taskId): bool
     {

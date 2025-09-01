@@ -83,26 +83,41 @@
                 </div>
 
 
-                <p class="task-desc" onclick="window.location.href='/?page=tasks&subpage=edit&id=<?= $task['id'] ?>'">
+                <p class="task-desc" >
                     
-                    <?= htmlspecialchars(mb_strimwidth($task['description'], 0, 80, '...')) ?>
+                    <a href="/?page=tasks&subpage=subtasks&id=<?= $task['id'] ?>" class="task-desc">
+
+                        <?= htmlspecialchars(mb_strimwidth($task['description'], 0, 80, '...')) ?>
+                    
+                    </a>
                 
                 </p>
 
 
                 <div class="task-card-footer">
+                    
+                    <div>
 
-                    <form method="POST" action="'/?page=tasks&subpage=delete&id=<?= $task['id'] ?>'" class="delete-form" 
+                        <form method="POST" action="'/?page=tasks&subpage=delete&id=<?= $task['id'] ?>'" class="delete-form" 
                         
-                        onsubmit="return confirm('Supprimer cette tâche ?');">
+                            onsubmit="return confirm('Supprimer cette tâche ?');">
 
-                        <input type="hidden" name="id" value="<?= $task['id'] ?>" />
+                            <input type="hidden" name="id" value="<?= $task['id'] ?>" />
 
-                        <input type="hidden" name="action" value="delete" />
+                            <input type="hidden" name="action" value="delete" />
 
-                        <button type="submit" class="delete-btn">🗑</button>
+                            <button type="submit" class="delete-btn">🗑</button>
 
-                    </form>
+                        </form>
+
+                    </div>
+                    
+
+                    <div>
+
+                        <span><?= htmlspecialchars($task['status']) ?></span>
+
+                    </div>
 
                 </div>
 

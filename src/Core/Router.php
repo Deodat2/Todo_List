@@ -5,6 +5,7 @@ namespace App\Core;
 use App\Controllers\UserController;
 use App\Controllers\DashboardController;
 use App\Controllers\TaskController;
+use App\Controllers\SubtaskController;
 use PDO;
 
 class Router {
@@ -15,7 +16,7 @@ class Router {
         $this->db = $db;
 
         if (session_status() === PHP_SESSION_NONE) {
-            
+
             session_start();
 
         }
@@ -28,6 +29,7 @@ class Router {
 
         switch ($uri) {
 
+            /** ---------- AUTH ---------- */
             case 'login':
 
                 $controller = new UserController($this->db);
@@ -57,9 +59,18 @@ class Router {
                     $controller->showRegisterForm();
 
                 }
-            
+
             break;
 
+            case 'logout':
+
+                $controller = new UserController($this->db);
+
+                $controller->logout();
+
+            break;
+
+            /** ---------- DASHBOARD ---------- */
             case 'dashboard':
 
                 if (!$this->isAuthenticated()) {
@@ -76,6 +87,7 @@ class Router {
 
             break;
 
+            /** ---------- TASKS ---------- */
             case 'tasks':
 
                 if (!$this->isAuthenticated()) {
@@ -86,17 +98,18 @@ class Router {
 
                 }
 
-                $controller = new TaskController($this->db);
+                $taskController = new TaskController($this->db);
+                $subtaskController = new SubtaskController($this->db);
 
                 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                    // Pour gérer delete, update, create en POST
+
                     if (isset($_POST['action'])) {
 
                         switch ($_POST['action']) {
 
                             case 'create':
 
-                                $controller->create($_POST);
+                                $taskController->create($_POST);
 
                             break;
 
@@ -104,7 +117,17 @@ class Router {
 
                                 $id = (int)($_POST['id'] ?? 0);
 
-                                $controller->update($id, $_POST);
+                                $taskController->update($id, $_POST);
+
+                            break;
+
+                            case 'updateStatus':
+
+                                $id = (int)($_POST['id'] ?? 0);
+
+                                $status = $_POST['status'] ?? 'created';
+
+                                $taskController->updateStatus($id, $status);
 
                             break;
 
@@ -112,75 +135,75 @@ class Router {
 
                                 $id = (int)($_POST['id'] ?? 0);
 
-                                $controller->delete($id);
+                                $taskController->delete($id);
 
+                            break;
+
+                            /** ---- SUBTASKS ---- */
+                            case 'subtask_create':
+                                $taskId = (int)($_POST['task_id'] ?? 0);
+                                $subtaskController->createSubtask($taskId, $_POST);
+                            break;
+
+                            case 'subtask_update':
+                                $id = (int)($_POST['id'] ?? 0);
+                                $subtaskController->updateSubtask($id, $_POST);
+                            break;
+
+                            case 'subtask_delete':
+                                $id = (int)($_POST['id'] ?? 0);
+                                $taskId = (int)($_POST['task_id'] ?? 0);
+                                $subtaskController->deleteSubtask($id, $taskId);
+                            break;
+
+                            case 'subtask_status':
+                                $id = (int)($_POST['id'] ?? 0);
+                                $taskId = (int)($_POST['task_id'] ?? 0);
+                                $status = $_POST['status'] ?? 'created';
+                                $subtaskController->updateSubtaskStatus($id, $status, $taskId);
                             break;
 
                             default:
                                 // Action inconnue
                                 header('Location: /?page=tasks');
                             exit;
-
                         }
-
                     }
-
                 } else {
-
                     // GET requests
                     $subpage = $_GET['subpage'] ?? '';
+
                     switch ($subpage) {
-
                         case 'create':
-
-                            $controller->CreateForm();
-
+                            $taskController->createForm();
                         break;
 
                         case 'edit':
-
                             $id = (int)($_GET['id'] ?? 0);
+                            $taskController->editForm($id);
+                        break;
 
-                            $controller->EditForm($id);
-
+                        case 'subtasks':
+                            $taskId = (int)($_GET['id'] ?? 0);
+                            $subtaskController->listSubtasks($taskId);
                         break;
 
                         default:
-
-                            $controller->getTasksForCurrentUser();
-
+                            $taskController->getTasksForCurrentUser();
                         break;
-
                     }
-
                 }
-
             break;
 
-            case 'logout':
-
-                $controller = new UserController($this->db);
-
-                $controller->logout();
-
-            break;
-
+            /** ---------- 404 ---------- */
             default:
-
                 header('HTTP/1.0 404 Not Found');
-
                 echo "Page non trouvée";
-
             break;
-
         }
-
     }
 
     private function isAuthenticated(): bool {
-
         return isset($_SESSION['user_id']);
-
     }
-
 }
